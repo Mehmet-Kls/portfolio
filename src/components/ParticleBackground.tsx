@@ -17,14 +17,21 @@ export default function ParticleBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
+
+    // Düşük performanslı cihazlarda tamamen kapat
+    const isLowEnd =
+      navigator.hardwareConcurrency !== undefined &&
+      navigator.hardwareConcurrency <= 4;
 
     let animId: number;
     const particles: Particle[] = [];
-    const PARTICLE_COUNT = 60;
-    const MAX_DIST = 140;
+    // Parçacık sayısını düşür
+    const PARTICLE_COUNT = isLowEnd ? 25 : 40;
+    const MAX_DIST = 120;
     const COLOR = "57, 255, 143";
+    let frameCount = 0;
 
     function resize() {
       if (!canvas) return;
@@ -36,10 +43,10 @@ export default function ParticleBackground() {
       return {
         x: Math.random() * (canvas?.width ?? 0),
         y: Math.random() * (canvas?.height ?? 0),
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        radius: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.5 + 0.2,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 1.2 + 0.4,
+        opacity: Math.random() * 0.4 + 0.15,
       };
     }
 
@@ -50,6 +57,14 @@ export default function ParticleBackground() {
 
     function draw() {
       if (!canvas || !ctx) return;
+      frameCount++;
+
+      // Her 2 frame'de bir çiz (30fps) — kasmayı azaltır
+      if (frameCount % 2 !== 0) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < particles.length; i++) {
@@ -67,14 +82,17 @@ export default function ParticleBackground() {
         ctx.fillStyle = `rgba(${COLOR}, ${p.opacity})`;
         ctx.fill();
 
+        // Bağlantı çizgilerini sadece yakın parçacıklar için çiz
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
+          // Kare kök almadan ön filtre (performans)
+          if (Math.abs(dx) > MAX_DIST || Math.abs(dy) > MAX_DIST) continue;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.15;
+            const alpha = (1 - dist / MAX_DIST) * 0.12;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
@@ -88,7 +106,17 @@ export default function ParticleBackground() {
       animId = requestAnimationFrame(draw);
     }
 
+    // Sekme arka planda iken durdur
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animId);
+      } else {
+        animId = requestAnimationFrame(draw);
+      }
+    };
+
     draw();
+    document.addEventListener("visibilitychange", onVisibility);
 
     const onResize = () => resize();
     window.addEventListener("resize", onResize);
@@ -96,13 +124,14 @@ export default function ParticleBackground() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 -z-10 opacity-40"
+      className="pointer-events-none fixed inset-0 -z-10 opacity-35"
       aria-hidden="true"
     />
   );
