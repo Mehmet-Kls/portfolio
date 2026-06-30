@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base: #0a0e0f;
+  --bg-surface: #0d1714;
+  --bg-elevated: #11211c;
+  --accent-volt: #39ff8f;
+  --accent-volt-dim: #1f8f53;
+  --accent-spark: #ff6b35;
+  --text-primary: #e8f0ec;
+  --text-secondary: #6f8a7e;
+  --text-tertiary: #41534a;
+  --line: #1c2e27;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent-volt);
+  color: var(--bg-base);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-volt-dim);
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-volt);
+  outline-offset: 2px;
+}
+
+.pcb-grid {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.text-glow {
+  text-shadow: 0 0 12px rgba(57, 255, 143, 0.45), 0 0 32px rgba(57, 255, 143, 0.15);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+.current-flow {
+  stroke-dasharray: 6 14;
+  animation: dash-flow 24s linear infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.node-pulse {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes flicker-in {
+  0% { opacity: 0; }
+  8% { opacity: 0.6; }
+  10% { opacity: 0.1; }
+  14% { opacity: 0.8; }
+  18% { opacity: 0.2; }
+  24% { opacity: 1; }
+  100% { opacity: 1; }
+}
+.flicker-in {
+  animation: flicker-in 1.4s steps(1) forwards;
+}
