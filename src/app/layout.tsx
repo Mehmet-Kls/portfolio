@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import VisitorTracker from "@/components/VisitorTracker";
+import CustomCursor from "@/components/CustomCursor";
+import ParticleBackground from "@/components/ParticleBackground";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -36,6 +38,8 @@ export default function RootLayout({
     <html lang="tr" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased">
         <VisitorTracker />
+        <CustomCursor />
+        <ParticleBackground />
         {children}
       </body>
     </html>

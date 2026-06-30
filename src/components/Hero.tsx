@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTypewriter } from "@/hooks/useTypewriter";
+import TerminalWidget from "./TerminalWidget";
 
 type Profile = {
   name: string;
@@ -9,8 +11,17 @@ type Profile = {
   githubUrl?: string | null;
 };
 
+const TITLES = [
+  "Elektrik Teknisyeni",
+  "Program Geliştirici",
+  "Discord Bot Geliştirici",
+  "Web Tasarımcı",
+  "Yapay Zeka Meraklısı",
+];
+
 export default function Hero({ profile }: { profile: Profile }) {
   const [booted, setBooted] = useState(false);
+  const typed = useTypewriter(TITLES, 65, 2000);
 
   useEffect(() => {
     const t = setTimeout(() => setBooted(true), 150);
@@ -37,12 +48,14 @@ export default function Hero({ profile }: { profile: Profile }) {
           {profile.name || "Mehmet Kls"}
         </h1>
 
+        {/* Typewriter başlık */}
         <p
-          className={`mt-5 max-w-2xl font-[family-name:var(--font-display)] text-xl text-[var(--accent-volt)] text-glow sm:text-2xl transition-all duration-700 delay-300 ${
+          className={`mt-5 font-[family-name:var(--font-display)] text-xl text-[var(--accent-volt)] text-glow sm:text-2xl transition-all duration-700 delay-300 ${
             booted ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           }`}
         >
-          {profile.title || "Elektrik Teknisyeni / Yazılım Geliştirici"}
+          {typed}
+          <span className="animate-pulse">_</span>
         </p>
 
         <p
@@ -55,13 +68,13 @@ export default function Hero({ profile }: { profile: Profile }) {
         </p>
 
         <div
-          className={`mt-10 flex flex-wrap gap-4 transition-all duration-700 delay-700 ${
+          className={`mt-8 flex flex-wrap gap-4 transition-all duration-700 delay-700 ${
             booted ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           }`}
         >
           <a
             href="#projeler"
-            className="group relative overflow-hidden border border-[var(--accent-volt)] px-6 py-3 mono text-sm text-[var(--accent-volt)] transition-colors hover:bg-[var(--accent-volt)] hover:text-[var(--bg-base)]"
+            className="border border-[var(--accent-volt)] px-6 py-3 mono text-sm text-[var(--accent-volt)] transition-colors hover:bg-[var(--accent-volt)] hover:text-[var(--bg-base)]"
           >
             → projeleri gör
           </a>
@@ -75,6 +88,15 @@ export default function Hero({ profile }: { profile: Profile }) {
               ⌥ github profili
             </a>
           )}
+        </div>
+
+        {/* Terminal widget */}
+        <div
+          className={`transition-all duration-700 delay-1000 ${
+            booted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+        >
+          <TerminalWidget />
         </div>
       </div>
 
